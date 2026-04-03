@@ -53,18 +53,14 @@ jobs:
     
     deploy:
         needs: build-and-push
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         steps:
-            - name: Deploy with SSH
-              uses: appleboy/ssh-action@v1
-              with:
-                host: ${{ secrets.SERVER_IP }}
-                username: dzyker
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                script: |
+              - name: Checkout code
+                run: |
                     cd /var/www/myapp
                     git pull origin main
-                    echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-                    docker compose pull
+                    
+              - name: Build and Restart Containers
+                run: |
                     docker compose up -d
                     docker image prune -f
