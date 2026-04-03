@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: ci_cd_practice
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d ci_cd_practice"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      DATABASE_URL: postgresql://app:app@db:5432/ci_cd_practice
+      PORT: "3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

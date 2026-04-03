@@ -2,13 +2,41 @@ import { FormEvent, useState } from "react";
 
 export const ContactPage = () => {
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
     const name = String(formData.get("name") ?? "").trim() || "друг";
-    setMessage(`Спасибо, ${name}! Сообщение отправлено (демо-режим).`);
-    event.currentTarget.reset();
+    const userMessage = String(formData.get("message") ?? "").trim();
+
+    if (!userMessage) {
+      setMessage("Введите сообщение перед отправкой.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setMessage("");
+
+      const response = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, message: userMessage })
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      setMessage(`Спасибо, ${name}! Сообщение сохранено в БД.`);
+      form.reset();
+    } catch {
+      setMessage("Не удалось отправить сообщение. Проверьте, что backend запущен.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -33,7 +61,9 @@ export const ContactPage = () => {
               required
             />
           </label>
-          <button type="submit">Отправить</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Отправка..." : "Отправить"}
+          </button>
         </form>
         <p className="form-result" aria-live="polite">
           {message}
