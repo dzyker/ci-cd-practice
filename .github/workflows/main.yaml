@@ -1,0 +1,70 @@
+on:
+    push:
+        branches: [ main ]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: 20
+                cache: 'npm'
+
+            - name: Instal dependencies
+              run: npm ci
+
+            - name: Run Lint
+              run: npm run lint
+
+            - name: Run Unit Tests
+              run: npm run test
+
+    build-and-push:
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+            - name: Build and Push Backend
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: ./Dockerfile.backend
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-backend:latest
+            
+            - name: Build and Push Frontend
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                file: ./Dockerfile.frontend
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-frontend:latest
+    
+    deploy:
+        needs: build-and-push
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy with SSH
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.SERVER_IP }}
+                username: dzyker
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                script: |
+                    cd /var/www/myapp
+                    git pull origin main
+                    echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+                    docker compose pull
+                    docker compose up -d
+                    docker image prune -f
