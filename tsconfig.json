@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "jest", "node"],
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
