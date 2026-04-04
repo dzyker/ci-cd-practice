@@ -43,7 +43,7 @@ export const ContactPage = () => {
     <>
       <header className="hero">
         <h1>Контакты</h1>
-        <p>Демо-форма с обработкой на клиенте. ТЕСТ ОШИБКИ</p>
+        <p>Демо-форма с обработкой на клиенте.</p>
       </header>
 
       <section className="panel">
