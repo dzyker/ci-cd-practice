@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-COPY index.html vite.config.ts vite.config.js tsconfig.json tsconfig.node.json ./
+COPY index.html eslint.config.mjs jest.config.cjs vite.config.ts vite.config.js tsconfig.json tsconfig.node.json ./
 COPY src ./src
 RUN npm run lint
 RUN npm run build
