@@ -2,7 +2,7 @@ export const HomePage = () => {
   return (
     <>
       <header className="hero">
-        <h1>TypeScript + React Mini Site</h1>
+        <h1>TypeScript + React Mini Site + CI/CD Actions</h1>
         <p>Простой сайт на React с роутингом, стилями и интерактивностью.</p>
       </header>
 
