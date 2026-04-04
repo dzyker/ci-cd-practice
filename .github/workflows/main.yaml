@@ -71,6 +71,7 @@ jobs:
               - name: Build and Restart Containers
                 run: |
                     cd /var/www/myapp
+                    docker compose down
                     docker compose pull
                     docker compose up -d
                     docker image prune -f
