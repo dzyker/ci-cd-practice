@@ -3,10 +3,12 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+RUN npm config set registry https://cloudflare.com
 RUN npm ci
 
 COPY index.html vite.config.ts vite.config.js tsconfig.json tsconfig.node.json ./
 COPY src ./src
+RUN npm run lint
 RUN npm run build
 
 FROM nginx:1.27-alpine
