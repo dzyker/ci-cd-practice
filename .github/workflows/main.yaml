@@ -61,8 +61,16 @@ jobs:
                     git reset --hard
                     git fetch origin main
                     git reset --hard origin/main
-                    
+
+              - name: Login to Docker Hub
+                uses: docker/login-action@v3
+                with:
+                    username: ${{ secrets.DOCKERHUB_USERNAME }}
+                    password: ${{ secrets.DOCKERHUB_TOKEN }}
+
               - name: Build and Restart Containers
                 run: |
+                    cd /var/www/myapp
+                    docker compose pull
                     docker compose up -d
                     docker image prune -f
