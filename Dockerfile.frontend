@@ -3,6 +3,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+RUN npm config set registry https://npmmirror.com && npm ci --omit=dev
+
 RUN npm ci
 
 COPY index.html eslint.config.mjs jest.config.cjs vite.config.ts vite.config.js tsconfig.json tsconfig.node.json ./
