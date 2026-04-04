@@ -11,7 +11,7 @@ export const App = () => {
         <nav className="nav">
           <Link to="/">Главная</Link>
           <Link to="/about">О проекте</Link>
-          <Link to="/contact">Контакты </Link>
+          <Link to="/contact">Контакты</Link>
         </nav>
 
         <Routes>
