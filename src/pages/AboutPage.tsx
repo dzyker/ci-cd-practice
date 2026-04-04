@@ -3,7 +3,7 @@ export const AboutPage = () => {
     <>
       <header className="hero">
         <h1>О проекте</h1>
-        <p>Минимальный React-проект без DevOps-обвязки, только приложение.</p>
+        <p>Минимальный React-проект теперь уже с DevOps фичами!</p>
       </header>
 
       <section className="panel">
